@@ -276,6 +276,8 @@ function saveComment() {
     const classr = slider3.value();
     const workr = slider2.value();
     const teacherr = slider3.value();
+    const classm = classDropdown.value();
+    const teacherm = teacherDropdown.value();
     const userId = firebase.auth().currentUser.uid;
     // Save the comment to Firebase; adjust the path as necessary for your data structure
     firebase.database().ref('comments/' + userId).push({
