@@ -44,7 +44,8 @@ function preload() {
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-
+    calculateAverageClassReviews();
+    calculateAverageTeacherReviews();
     // Initialize the "Sign in with Google" button
     signInButton = createButton('Sign In with Google');
     signInButton.position(SIBx, SIBy);
@@ -135,6 +136,15 @@ function setup() {
     homepagebutton.mousePressed(toggleVariable3);
     homepagebutton.hide();
 
+    viewclassDropdown = createSelect();
+    viewclassDropdown.style("font-size", "16px");
+    viewclassDropdown.style("text-align", "center");
+    viewclassDropdown.position(500, 110);
+    viewclassDropdown.size(200,40);
+    for (let cls in classes) {
+        viewclassDropdown.option(cls);
+    }
+    viewclassDropdown.hide();
     
     // Adjust UI elements if the window is resized
     windowResized();
@@ -165,7 +175,23 @@ function setup() {
                         lwhs = 1;
                         fc = 1;
                     } else if (viewreviews == 1){ //view review page
-
+                        reviewbutton.hide();
+                        viewreviewbutton.hide();
+                        signInButton.hide();
+                        logoutButton.show();
+                        commentInput.hide();
+                        saveCommentButton.hide();
+                        slider.hide();
+                        slider2.hide();
+                        slider3.hide();
+                        teacherDropdown.hide();
+                        classDropdown.hide();
+                        homepagebutton.show();
+                        viewclassDropdown.show();
+                        userName = user.displayName || "User";
+                        print("omar");
+                        lwhs = 1;
+                        fc = 1;
                     } else{ //menu
                         reviewbutton.show();
                         viewreviewbutton.show();
@@ -179,6 +205,7 @@ function setup() {
                         teacherDropdown.hide();
                         classDropdown.hide();
                         homepagebutton.hide();
+                        viewclassDropdown.hide();
                         userName = user.displayName || "User";
                         lwhs = 1;
                         fc = 1;
@@ -309,7 +336,44 @@ function draw() {
                 //calculateAverageClassReviews();
                 //calculateAverageTeacherReviews();
                 print(reviews);
-            } else{
+            } else if (viewreviews == 1){
+                reviewbutton.hide();
+                viewreviewbutton.hide();
+                signInButton.hide();
+                logoutButton.show();
+                commentInput.hide();
+                saveCommentButton.hide();
+                slider.hide();
+                slider2.hide();
+                slider3.hide();
+                teacherDropdown.hide();
+                classDropdown.hide();
+                homepagebutton.show();
+                viewclassDropdown.show();
+                selectedClass = viewclassDropdown.value();
+
+                // Display average class reviews for the selected class
+                textSize(16);
+                textAlign(LEFT, TOP);
+                let yOffset = 50; // Initial Y offset for the first review
+                if (selectedClass && calculateAverageClassReviews[selectedClass]) {
+                    const averageRating = calculateAverageClassReviews[selectedClass];
+                    let reviewText = `Class: ${selectedClass}, Average Rating: ${averageRating}`;
+                    text(reviewText, 50, yOffset);
+                    yOffset += 20; // Increase Y offset for the next review
+                }
+
+                // Display average teacher reviews
+                textSize(16);
+                textAlign(LEFT, TOP);
+                yOffset = 50; // Reset Y offset for teacher reviews
+                for (const teacherName in calculateAverageTeacherReviews) {
+                    const averageRating = calculateAverageTeacherReviews[teacherName];
+                    let reviewText = `Teacher: ${teacherName}, Average Rating: ${averageRating}`;
+                    text(reviewText, 400, yOffset);
+                    yOffset += 20; // Increase Y offset for the next review
+                }
+            }else{
                 reviewbutton.show();
                 viewreviewbutton.show();
                 signInButton.hide();
@@ -322,6 +386,7 @@ function draw() {
                 teacherDropdown.hide();
                 classDropdown.hide();
                 homepagebutton.hide();
+                viewclassDropdown.hide();
                 textSize(25)
                 text('Please Choose What You Would Like To Do',windowWidth/2 + 20,100);
             }
@@ -432,7 +497,7 @@ function calculateAverageClassReviews() {
                 if (!classRatings[className]) {
                     classRatings[className] = { sum: 0, count: 0 };
                 }
-                
+
                 classRatings[className].sum += classReview;
                 classRatings[className].count++;
             });
