@@ -364,7 +364,7 @@ function draw() {
                         textSize(20);
                         textAlign(CENTER, CENTER);
                         const rating = Number(viewAVGClass).toFixed(2);
-                        text(viewClassSelect + "'s Average Review: " + rating, windowWidth/2, 300);
+                        text(viewClassSelect + "'s Average Review: " + rating , windowWidth/2, 300);
                     }
 
                 } else {
