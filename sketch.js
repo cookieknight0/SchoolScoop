@@ -18,6 +18,7 @@ let reviews = 0; //0 is no review
 let viewreviews = 0; //0 is not viewing reviews
 let viewClassSelect = '';
 let viewAVGClass = '';
+let teacherAVGClass = {};
 let classSelectionMade = false;
 let happyImage, midImage, sadImage, greatImage, madImage;
 let comments = []; // Array to store comments fetched from Firebase
@@ -365,6 +366,12 @@ function draw() {
                         textAlign(CENTER, CENTER);
                         const rating = Number(viewAVGClass).toFixed(2);
                         text(viewClassSelect + "'s Average Review: " + rating , windowWidth/2, 300);
+                        let yPos = 400; // Starting y-position for teacher reviews
+                        for (const teacherName in teacherAVGClass) {
+                            const teacherReview = Number(teacherAVGClass[teacherName]).toFixed(2);
+                            text(teacherName + "'s Average Review: " + teacherReview, windowWidth/2, yPos);
+                            yPos += 50; // Increase y-position for the next teacher's review
+                        }
                     }
 
                 } else {
@@ -437,7 +444,8 @@ function signOut() {
     });
 }
 function classSelectionChanged() {
-
+    const selectedClass = viewclassDropdown.value();
+    viewClassSelect = selectedClass;
     classSelectionMade = true;
     calculateAverageClassReviews()
         .then((averageClassReviews) => {
@@ -452,6 +460,15 @@ function classSelectionChanged() {
         .catch((error) => {
             console.error('Error:', error);
         });
+    calculateAverageTeacherReviews(selectedClass)
+        .then((averageTeacherReviews) => {
+            const selectedClass = viewclassDropdown.value();
+            teacherAVGClass = averageTeacherReviews; // Assign average teacher reviews to teacherAVGClass
+            viewClassSelect = selectedClass;
+        })
+        .catch((error) => {
+            console.error('Error calculating average teacher reviews:', error);
+    });
 }
 function saveComment() {
     const comment = commentInput.value();
@@ -541,44 +558,41 @@ function calculateAverageClassReviews() {
     });
 }
 
-function calculateAverageTeacherReviews() {
-    const teacherRatings = {};
-    const teacherCommentsRef = firebase.database().ref('comments');
+function calculateAverageTeacherReviews(selectedClass) {
+    return new Promise((resolve, reject) => {
+        const teacherRatings = {};
+        const teacherCommentsRef = firebase.database().ref('comments');
 
-    teacherCommentsRef.once('value', (snapshot) => {
-        snapshot.forEach((userSnapshot) => {
-            userSnapshot.forEach((commentSnapshot) => {
-                const teacherReview = commentSnapshot.child('teacherr').val();
-                const teacherName = commentSnapshot.child('teacherm').val();
-                
-                if (!teacherRatings[teacherName]) {
-                    teacherRatings[teacherName] = { sum: 0, count: 0 };
-                }
-                
-                teacherRatings[teacherName].sum += teacherReview;
-                teacherRatings[teacherName].count++;
+        teacherCommentsRef.once('value', (snapshot) => {
+            snapshot.forEach((userSnapshot) => {
+                userSnapshot.forEach((commentSnapshot) => {
+                    const teacherReview = commentSnapshot.child('teacherr').val();
+                    const teacherName = commentSnapshot.child('teacherm').val();
+                    const className = commentSnapshot.child('classm').val();
+
+                    // Check if the comment belongs to the selected class
+                    if (className === selectedClass) {
+                        if (!teacherRatings[teacherName]) {
+                            teacherRatings[teacherName] = { sum: 0, count: 0 };
+                        }
+
+                        teacherRatings[teacherName].sum += teacherReview;
+                        teacherRatings[teacherName].count++;
+                    }
+                });
             });
+
+            const averageTeacherReviews = {};
+            for (const teacherName in teacherRatings) {
+                const { sum, count } = teacherRatings[teacherName];
+                averageTeacherReviews[teacherName] = sum / count;
+            }
+
+            console.log('Average teacher reviews for', selectedClass + ':', averageTeacherReviews);
+            resolve(averageTeacherReviews);
+        }).catch((error) => {
+            console.error('Error calculating average teacher reviews:', error);
+            reject(error);
         });
-
-        const averageTeacherReviews = {};
-        for (const teacherName in teacherRatings) {
-            const { sum, count } = teacherRatings[teacherName];
-            averageTeacherReviews[teacherName] = sum / count;
-        }
-
-        console.log('Average teacher reviews:', averageTeacherReviews);
-    }).catch((error) => {
-        console.error('Error calculating average teacher reviews:', error);
     });
-}
-
-function drawStars(x, y, rating) {
-    const starSize = 30; // Size of each star
-    const spacing = 40; // Spacing between stars
-
-    // Draw stars based on the rounded average rating
-    for (let i = 0; i < rating; i++) {
-        textSize(20);
-        text("⭐", x + i * spacing, y);
-    }
 }
