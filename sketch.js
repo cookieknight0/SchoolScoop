@@ -16,8 +16,9 @@ let classes = {
 };
 let reviews = 0; //0 is no review
 let viewreviews = 0; //0 is not viewing reviews
-
-
+let viewClassSelect = '';
+let viewAVGClass = '';
+let classSelectionMade = false;
 let happyImage, midImage, sadImage, greatImage, madImage;
 let comments = []; // Array to store comments fetched from Firebase
 var SIBx = 40;
@@ -46,6 +47,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     calculateAverageClassReviews();
     calculateAverageTeacherReviews();
+
     // Initialize the "Sign in with Google" button
     signInButton = createButton('Sign In with Google');
     signInButton.position(SIBx, SIBy);
@@ -144,8 +146,9 @@ function setup() {
     for (let cls in classes) {
         viewclassDropdown.option(cls);
     }
+    viewclassDropdown.changed(classSelectionChanged);
     viewclassDropdown.hide();
-    
+
     // Adjust UI elements if the window is resized
     windowResized();
 
@@ -252,10 +255,11 @@ function setup() {
 
 function draw() {
     background('#6F6F6F');
+
     // Show welcome message near logout button if user is signed in
     if (userName) {
-        if (fc == 1){
-            if (reviews == 1){
+        if (fc == 1){ //student
+            if (reviews == 1){ //write a review
                 logoutButton.show();
                 signInButton.hide();
                 commentInput.show();
@@ -336,7 +340,7 @@ function draw() {
                 //calculateAverageClassReviews();
                 //calculateAverageTeacherReviews();
                 print(reviews);
-            } else if (viewreviews == 1){
+            } else if (viewreviews == 1){ //view reviews
                 reviewbutton.hide();
                 viewreviewbutton.hide();
                 signInButton.hide();
@@ -351,29 +355,28 @@ function draw() {
                 homepagebutton.show();
                 viewclassDropdown.show();
                 selectedClass = viewclassDropdown.value();
+                viewclassDropdown.changed(classSelectionChanged);
+                if (classSelectionMade == true) {
+                    // Display the text
+                    if (viewClassSelect == 'Select Class'){
 
-                // Display average class reviews for the selected class
-                textSize(16);
-                textAlign(LEFT, TOP);
-                let yOffset = 50; // Initial Y offset for the first review
-                if (selectedClass && calculateAverageClassReviews[selectedClass]) {
-                    const averageRating = calculateAverageClassReviews[selectedClass];
-                    let reviewText = `Class: ${selectedClass}, Average Rating: ${averageRating}`;
-                    text(reviewText, 50, yOffset);
-                    yOffset += 20; // Increase Y offset for the next review
-                }
+                    }else{
+                        textSize(20);
+                        textAlign(CENTER, CENTER);
+                        const rating = Number(viewAVGClass).toFixed(2);
+                        text(viewClassSelect + "'s Average Review: " + rating, windowWidth/2, 300);
+                    }
 
-                // Display average teacher reviews
-                textSize(16);
-                textAlign(LEFT, TOP);
-                yOffset = 50; // Reset Y offset for teacher reviews
-                for (const teacherName in calculateAverageTeacherReviews) {
-                    const averageRating = calculateAverageTeacherReviews[teacherName];
-                    let reviewText = `Teacher: ${teacherName}, Average Rating: ${averageRating}`;
-                    text(reviewText, 400, yOffset);
-                    yOffset += 20; // Increase Y offset for the next review
+                } else {
+                    // If class selection hasn't been made or the asynchronous operation hasn't completed yet, display a message indicating that
+                    textSize(20);
+                    textAlign(CENTER, CENTER);
+                    text("Please make a class selection", windowWidth/2, 300);
                 }
-            }else{
+            
+                
+                
+            }else{ //menu
                 reviewbutton.show();
                 viewreviewbutton.show();
                 signInButton.hide();
@@ -387,11 +390,12 @@ function draw() {
                 classDropdown.hide();
                 homepagebutton.hide();
                 viewclassDropdown.hide();
+                classSelectionChanged();
                 textSize(25)
                 text('Please Choose What You Would Like To Do',windowWidth/2 + 20,100);
             }
             
-        } else {
+        } else { 
             fill(0);
             textFont(customFont);
             textSize(20); // Smaller text size
@@ -399,7 +403,7 @@ function draw() {
             text(`Welcome ${userName}`, windowWidth - 130, 15);
         }
     }
-    if (lwhs == 0) {
+    if (lwhs == 0) { //nonlwhs
         textSize(40);
         textFont(customFont);
         textAlign(CENTER, CENTER);
@@ -432,7 +436,23 @@ function signOut() {
         console.error("Sign out error:", error.message);
     });
 }
+function classSelectionChanged() {
 
+    classSelectionMade = true;
+    calculateAverageClassReviews()
+        .then((averageClassReviews) => {
+            const selectedClass = viewclassDropdown.value();
+            const averageRating = averageClassReviews[selectedClass];
+            console.log('Average rating for selected class:', averageRating);
+            // You can use averageRating to create text or perform any other operation
+            viewAVGClass = averageRating; // Assign averageRating to viewAVGClass
+            viewClassSelect = selectedClass;
+            print('bob')
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+}
 function saveComment() {
     const comment = commentInput.value();
     const classr = slider3.value();
@@ -474,9 +494,11 @@ function windowResized() {
 
 function toggleVariable1() {
     reviews = 1;
+
   }
 function toggleVariable2() {
     viewreviews = 1;
+
 }
 function toggleVariable3() {
     viewreviews = 0;
@@ -485,33 +507,37 @@ function toggleVariable3() {
 
 
 function calculateAverageClassReviews() {
-    const classRatings = {};
-    const classCommentsRef = firebase.database().ref('comments');
+    return new Promise((resolve, reject) => {
+        const classRatings = {};
+        const classCommentsRef = firebase.database().ref('comments');
 
-    classCommentsRef.once('value', (snapshot) => {
-        snapshot.forEach((userSnapshot) => {
-            userSnapshot.forEach((commentSnapshot) => {
-                const classReview = commentSnapshot.child('classr').val();
-                const className = commentSnapshot.child('classm').val();
-                
-                if (!classRatings[className]) {
-                    classRatings[className] = { sum: 0, count: 0 };
-                }
+        classCommentsRef.once('value', (snapshot) => {
+            snapshot.forEach((userSnapshot) => {
+                userSnapshot.forEach((commentSnapshot) => {
+                    const classReview = commentSnapshot.child('classr').val();
+                    const className = commentSnapshot.child('classm').val();
 
-                classRatings[className].sum += classReview;
-                classRatings[className].count++;
+                    if (!classRatings[className]) {
+                        classRatings[className] = { sum: 0, count: 0 };
+                    }
+
+                    classRatings[className].sum += classReview;
+                    classRatings[className].count++;
+                });
             });
+
+            const averageClassReviews = {};
+            for (const className in classRatings) {
+                const { sum, count } = classRatings[className];
+                averageClassReviews[className] = sum / count;
+            }
+
+            console.log('Average class reviews:', averageClassReviews);
+            resolve(averageClassReviews);
+        }).catch((error) => {
+            console.error('Error calculating average class reviews:', error);
+            reject(error);
         });
-
-        const averageClassReviews = {};
-        for (const className in classRatings) {
-            const { sum, count } = classRatings[className];
-            averageClassReviews[className] = sum / count;
-        }
-
-        console.log('Average class reviews:', averageClassReviews);
-    }).catch((error) => {
-        console.error('Error calculating average class reviews:', error);
     });
 }
 
@@ -546,4 +572,13 @@ function calculateAverageTeacherReviews() {
     });
 }
 
+function drawStars(x, y, rating) {
+    const starSize = 30; // Size of each star
+    const spacing = 40; // Spacing between stars
 
+    // Draw stars based on the rounded average rating
+    for (let i = 0; i < rating; i++) {
+        textSize(20);
+        text("⭐", x + i * spacing, y);
+    }
+}
