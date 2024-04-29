@@ -7,6 +7,7 @@ let customFont;
 var lwhs = 0; // 0 is non lwhs, 1 is lwhs
 let firstCharacter = "";
 var fc = 0; // 0 is teacher, 1 is student
+let signedIn = 0; //0 has not tried
 let classDropdown, teacherDropdown;
 let classes = {
     "Select Class": [""],
@@ -48,6 +49,7 @@ function preload() {
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
+    resizeCanvas(windowWidth, windowHeight);
     calculateAverageClassReviews();
     calculateAverageTeacherReviews();
 
@@ -240,7 +242,7 @@ function setup() {
                     slider3.hide();
                     teacherDropdown.hide();
                     classDropdown.hide();
-                    saveFavoriteButton.show();
+                    saveFavoriteButton.hide();
                     userName = user.displayName || "User";
                     lwhs = 1;
                     fc = 0;
@@ -250,6 +252,7 @@ function setup() {
             } else {
                 console.log("User email does not end with 'lwhs.org'");
                 lwhs = 0;
+                signedIn = 1;
 
             }
             
@@ -261,6 +264,9 @@ function setup() {
             slider.hide();
             slider2.hide();
             slider3.hide();
+            saveFavoriteButton.hide();
+            reviewbutton.hide();
+            viewreviewbutton.hide();
             userName = "";
             print("joe");
         }
@@ -270,6 +276,7 @@ function setup() {
 }
 
 function draw() {
+    resizeCanvas(windowWidth, windowHeight);
     background('#6F6F6F');
 
     // Show welcome message near logout button if user is signed in
@@ -450,9 +457,10 @@ function draw() {
 
                 } else {
                     // If class selection hasn't been made or the asynchronous operation hasn't completed yet, display a message indicating that
-                    textSize(20);
+                    textSize(40);
                     textAlign(CENTER, CENTER);
                     text("Please make a class selection", windowWidth/2, 300);
+
                 }
                 fill(0);
                 textFont(customFont);
@@ -479,6 +487,7 @@ function draw() {
                 classDropdown.hide();
                 homepagebutton.hide();
                 viewclassDropdown.hide();
+                saveFavoriteButton.hide();
                 classSelectionChanged();
                 textSize(25)
                 textAlign(CENTER,CENTER);
@@ -499,10 +508,14 @@ function draw() {
         }
     }
     if (lwhs == 0) { //nonlwhs
-        textSize(40);
         textFont(customFont);
         textAlign(CENTER, CENTER);
+        textSize(40);
         text("Please Log In With Your School Email",windowWidth/2,windowHeight/2 - 150)
+        if (signedIn == 1){
+            textSize(20);
+            text("Wrong Email",windowWidth/2,200);
+        }
     }
 
 }
@@ -527,6 +540,8 @@ function signInWithGoogle() {
 }
 
 function signOut() {
+    lwhs = 0;
+    signedIn = 0;
     firebase.auth().signOut().catch((error) => {
         console.error("Sign out error:", error.message);
     });
