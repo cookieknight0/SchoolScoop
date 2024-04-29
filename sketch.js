@@ -14,6 +14,7 @@ let classes = {
   "History": ["Teacher7", "Teacher8", "Teacher9"],
   "Physics": ["Teacher4","Teacher1"]
 };
+let classFavorites = [];
 let reviews = 0; //0 is no review
 let viewreviews = 0; //0 is not viewing reviews
 let viewClassSelect = '';
@@ -151,6 +152,15 @@ function setup() {
     viewclassDropdown.changed(classSelectionChanged);
     viewclassDropdown.hide();
 
+    saveFavoriteButton = createButton('Add to Favorites');
+    saveFavoriteButton.style("font-size", "15px");
+    saveFavoriteButton.style("text-align", "center");
+    saveFavoriteButton.position(500, 700);
+    saveFavoriteButton.size(200,40);
+    saveFavoriteButton.mousePressed(toggleVariable4);
+    saveFavoriteButton.hide();
+
+
     // Adjust UI elements if the window is resized
     windowResized();
 
@@ -175,6 +185,7 @@ function setup() {
                         reviewbutton.hide();
                         viewreviewbutton.hide();
                         homepagebutton.show();
+                        saveFavoriteButton.hide();
                         userName = user.displayName || "User";
                         print("bob");
                         lwhs = 1;
@@ -193,6 +204,7 @@ function setup() {
                         classDropdown.hide();
                         homepagebutton.show();
                         viewclassDropdown.show();
+                        saveFavoriteButton.show();
                         userName = user.displayName || "User";
                         print("omar");
                         lwhs = 1;
@@ -211,6 +223,7 @@ function setup() {
                         classDropdown.hide();
                         homepagebutton.hide();
                         viewclassDropdown.hide();
+                        saveFavoriteButton.hide();
                         userName = user.displayName || "User";
                         lwhs = 1;
                         fc = 1;
@@ -227,6 +240,7 @@ function setup() {
                     slider3.hide();
                     teacherDropdown.hide();
                     classDropdown.hide();
+                    saveFavoriteButton.show();
                     userName = user.displayName || "User";
                     lwhs = 1;
                     fc = 0;
@@ -274,6 +288,7 @@ function draw() {
                 reviewbutton.hide();
                 viewreviewbutton.hide();
                 homepagebutton.show();
+                saveFavoriteButton.hide();
                 fill(0);
                 textSize(15);
                 textFont(customFont);
@@ -356,6 +371,7 @@ function draw() {
                 classDropdown.hide();
                 homepagebutton.show();
                 viewclassDropdown.show();
+                saveFavoriteButton.show();
                 selectedClass = viewclassDropdown.value();
                 viewclassDropdown.changed(classSelectionChanged);
                 if (classSelectionMade == true) {
@@ -401,10 +417,12 @@ function draw() {
                               if (convertedTime >= 2){
                                 plural = 's'
                               }
-                            const textToShow = review.class + ' (' + review.teacher + '):' + review.review
+                            const textToShow = review.review
                             // Split the text into lines with 30 characters each
                             const lines = splitTextIntoLines(textToShow);
-                    
+                            textSize(18);
+                            text(review.class + ' (' + review.teacher + '):',1015,yPos)
+                            yPos += 25;
                             // Display each line of text
                             for (let j = 0; j < lines.length; j++) {
                                 const line = lines[j];
@@ -442,7 +460,8 @@ function draw() {
                 textAlign(RIGHT, TOP);
                 text(`Welcome ${userName}`, windowWidth - 130, 15);
                 line(0,100,10000,100);
-                line(800,100,800,10000);
+                line(820,100,820,10000);
+                line(300,100,300,10000)
                 text('Reviews',1050,120)
                 
                 
@@ -599,6 +618,9 @@ function toggleVariable2() {
 function toggleVariable3() {
     viewreviews = 0;
     reviews = 0;
+}
+function toggleVariable4(){
+    classFavorites.push(viewClassSelect.value());
 }
 
 
