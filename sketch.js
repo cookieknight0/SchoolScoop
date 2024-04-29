@@ -430,7 +430,7 @@ function draw() {
                                     }
                                 }
                               }else{
-                                timeType = 'seconds'
+                                timeType = 'second'
                               }
                               if (convertedTime >= 2){
                                 plural = 's'
