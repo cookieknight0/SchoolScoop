@@ -372,8 +372,36 @@ function draw() {
                         let yPos = 180;
                         for (let i = 0; i < textCommentsRef.length; i++) {
                             const review = textCommentsRef[i];
+                            let  plural = ''
+                            let timeType = ''
+                            const difference_seconds = timeDifference(review.time);
+                            console.log(timeDifference(review.time));
+                            if (difference_seconds >= 60){
+                                convertedTime = Math.floor(difference_seconds/60)
+                                timeType = 'minute'
+                                if (convertedTime >= 60){
+                                    timeType = 'hour'
+                                    convertedTime = Math.floor(convertedTime/60)
+                                    if(convertedTime >= 24){
+                                        timeType = 'day'
+                                        convertedTime = Math.floor(convertedTime/24)
+                                        if(convertedTime >= 7){
+                                            convertedTime = Math.floor(convertedTime/7)
+                                            timeType = 'week'
+                                            if(convertedTime >= 30){
+                                                timeType = 'month'
+                                                convertedTime = Math.floor(convertedTime/30.4375)
+                                            }
+                                        }
+                                    }
+                                }
+                              }else{
+                                timeType = 'seconds'
+                              }
+                              if (convertedTime >= 2){
+                                plural = 's'
+                              }
                             const textToShow = review.class + ' (' + review.teacher + '):' + review.review
-                            
                             // Split the text into lines with 30 characters each
                             const lines = splitTextIntoLines(textToShow);
                     
@@ -383,9 +411,14 @@ function draw() {
                                 textAlign(CENTER, CENTER);
                                 textSize(17);
                                 text(line, 1015, yPos); // Display the line of text at the calculated y position
+                                textSize(10);
+                                
                                 yPos += 20; // Move to the next line
                             }
-                            yPos += 15;
+                            yPos+= 0;
+                            text(convertedTime + ' ' + timeType + plural +' ago',1015,yPos);
+                            yPos += 20;
+                            
                         }
                         yPos = 320; // Starting y-position for teacher reviews
                         for (const teacherName in teacherAVGClass) {
@@ -653,13 +686,15 @@ function textReviews(selectedClass) {
                     const textReview = commentSnapshot.child('comment').val();
                     const teacherName = commentSnapshot.child('teacherm').val();
                     const className = commentSnapshot.child('classm').val();
+                    const timestamp = commentSnapshot.child('timestamp').val();
+
 
                     // Check if the comment belongs to the selected class
                     if (className === selectedClass) {
                         if (textReview == ''){
 
                         }else{
-                            textReviews.push({ class: className, teacher: teacherName, review: textReview });
+                            textReviews.push({ class: className, teacher: teacherName, review: textReview, time: timestamp });
                         }
 
                     }
@@ -691,3 +726,8 @@ function splitTextIntoLines(text) {
     }
     return lines;
 }
+function timeDifference(unix_time) {
+    let current_time = Math.floor(Date.now() / 1000); // Convert milliseconds to seconds
+    let difference_seconds = current_time - Math.floor(unix_time/1000);
+    return difference_seconds;
+  }
