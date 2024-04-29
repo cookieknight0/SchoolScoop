@@ -22,10 +22,11 @@ let teacherAVGClass = {};
 let classSelectionMade = false;
 let happyImage, midImage, sadImage, greatImage, madImage;
 let comments = []; // Array to store comments fetched from Firebase
+let textComments = [];
 var SIBx = 40;
 var SIBy = 40;
 var LOBx = 1000;
-var LOBy = 75;
+var LOBy = 55;
 var CIBx = 420;
 var CIBy = 512;
 var SCBx = 535;
@@ -60,7 +61,7 @@ function setup() {
     logoutButton.position(LOBx, LOBy); // Upper right corner
     logoutButton.style('font-size', '20px');
     logoutButton.mousePressed(signOut);
-    logoutButton.size(100,30);
+    logoutButton.size(80,40);
     logoutButton.hide();
 
     // Input for comments
@@ -134,7 +135,7 @@ function setup() {
     homepagebutton.style("font-size", "15px");
     homepagebutton.style("text-align", "center");
     homepagebutton.style('background-color', '#67AEFF');
-    homepagebutton.position( 50, 50);
+    homepagebutton.position( 50, 55);
     homepagebutton.size(80,40);
     homepagebutton.mousePressed(toggleVariable3);
     homepagebutton.hide();
@@ -142,7 +143,7 @@ function setup() {
     viewclassDropdown = createSelect();
     viewclassDropdown.style("font-size", "16px");
     viewclassDropdown.style("text-align", "center");
-    viewclassDropdown.position(500, 110);
+    viewclassDropdown.position(500, 140);
     viewclassDropdown.size(200,40);
     for (let cls in classes) {
         viewclassDropdown.option(cls);
@@ -365,11 +366,33 @@ function draw() {
                         textSize(20);
                         textAlign(CENTER, CENTER);
                         const rating = Number(viewAVGClass).toFixed(2);
-                        text(viewClassSelect + "'s Average Review: " + rating , windowWidth/2, 300);
-                        let yPos = 400; // Starting y-position for teacher reviews
+                        text(viewClassSelect + "'s Average Review: " + rating +'/10', windowWidth/2, 230);
+                        const textCommentsRef = textComments;
+                        console.log(textCommentsRef)
+                        let yPos = 180;
+                        for (let i = 0; i < textCommentsRef.length; i++) {
+                            const review = textCommentsRef[i];
+                            const textToShow = review.class + ' (' + review.teacher + '):' + review.review
+                            
+                            // Split the text into lines with 30 characters each
+                            const lines = splitTextIntoLines(textToShow);
+                    
+                            // Display each line of text
+                            for (let j = 0; j < lines.length; j++) {
+                                const line = lines[j];
+                                textAlign(CENTER, CENTER);
+                                textSize(17);
+                                text(line, 1015, yPos); // Display the line of text at the calculated y position
+                                yPos += 20; // Move to the next line
+                            }
+                            yPos += 15;
+                        }
+                        yPos = 320; // Starting y-position for teacher reviews
                         for (const teacherName in teacherAVGClass) {
                             const teacherReview = Number(teacherAVGClass[teacherName]).toFixed(2);
-                            text(teacherName + "'s Average Review: " + teacherReview, windowWidth/2, yPos);
+                            textAlign(CENTER, CENTER);
+                            textSize(18);
+                            text(teacherName + "'s Average Review: " + teacherReview + '/10', windowWidth/2, yPos);
                             yPos += 50; // Increase y-position for the next teacher's review
                         }
                     }
@@ -380,7 +403,14 @@ function draw() {
                     textAlign(CENTER, CENTER);
                     text("Please make a class selection", windowWidth/2, 300);
                 }
-            
+                fill(0);
+                textFont(customFont);
+                textSize(20); // Smaller text size
+                textAlign(RIGHT, TOP);
+                text(`Welcome ${userName}`, windowWidth - 130, 15);
+                line(0,100,10000,100);
+                line(800,100,800,10000);
+                text('Reviews',1050,120)
                 
                 
             }else{ //menu
@@ -399,7 +429,13 @@ function draw() {
                 viewclassDropdown.hide();
                 classSelectionChanged();
                 textSize(25)
+                textAlign(CENTER,CENTER);
                 text('Please Choose What You Would Like To Do',windowWidth/2 + 20,100);
+                fill(0);
+                textFont(customFont);
+                textSize(20); // Smaller text size
+                textAlign(RIGHT, TOP);
+                text(`Welcome ${userName}`, windowWidth - 130, 15);
             }
             
         } else { 
@@ -460,6 +496,7 @@ function classSelectionChanged() {
         .catch((error) => {
             console.error('Error:', error);
         });
+
     calculateAverageTeacherReviews(selectedClass)
         .then((averageTeacherReviews) => {
             const selectedClass = viewclassDropdown.value();
@@ -468,6 +505,15 @@ function classSelectionChanged() {
         })
         .catch((error) => {
             console.error('Error calculating average teacher reviews:', error);
+    });
+    textReviews(selectedClass)
+        .then((textReviews) => {
+            const selectedClass = viewclassDropdown.value();
+            textComments = textReviews; // Assign average teacher reviews to teacherAVGClass
+            viewClassSelect = selectedClass;
+        })
+        .catch((error) => {
+            console.error('Error Finding Reviews:', error);
     });
 }
 function saveComment() {
@@ -595,4 +641,53 @@ function calculateAverageTeacherReviews(selectedClass) {
             reject(error);
         });
     });
+}
+function textReviews(selectedClass) {
+    return new Promise((resolve, reject) => {
+        const textReviews = [];
+        const textReviewsRef = firebase.database().ref('comments');
+
+        textReviewsRef.once('value', (snapshot) => {
+            snapshot.forEach((userSnapshot) => {
+                userSnapshot.forEach((commentSnapshot) => {
+                    const textReview = commentSnapshot.child('comment').val();
+                    const teacherName = commentSnapshot.child('teacherm').val();
+                    const className = commentSnapshot.child('classm').val();
+
+                    // Check if the comment belongs to the selected class
+                    if (className === selectedClass) {
+                        if (textReview == ''){
+
+                        }else{
+                            textReviews.push({ class: className, teacher: teacherName, review: textReview });
+                        }
+
+                    }
+                });
+            });
+            console.log('Reviews for', selectedClass + ':', textReviews);
+            // Resolve the promise with the list of teacher reviews
+            resolve(textReviews);
+        }).catch((error) => {
+            console.error('Error finding reviews:', error);
+            reject(error);
+        });
+    });
+}
+function splitTextIntoLines(text) {
+    const lines = [];
+    let line = '';
+    const words = text.split(' ');
+    for (let i = 0; i < words.length; i++) {
+        if (line.length + words[i].length <= 40) {
+            line += words[i] + ' ';
+        } else {
+            lines.push(line);
+            line = words[i] + ' ';
+        }
+    }
+    if (line !== '') {
+        lines.push(line);
+    }
+    return lines;
 }
