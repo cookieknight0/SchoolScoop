@@ -267,6 +267,17 @@ function setup() {
             saveFavoriteButton.hide();
             reviewbutton.hide();
             viewreviewbutton.hide();
+            signInButton.show();
+            commentInput.hide();
+            saveCommentButton.hide();
+            slider.hide();
+            slider2.hide();
+            slider3.hide();
+            teacherDropdown.hide();
+            classDropdown.hide();
+            homepagebutton.hide();
+            viewclassDropdown.hide();
+            saveFavoriteButton.hide();
             userName = "";
             print("joe");
         }
