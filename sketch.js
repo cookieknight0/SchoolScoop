@@ -10,7 +10,7 @@ var fc = 0; // 0 is teacher, 1 is student
 let classDropdown, teacherDropdown;
 let classes = {
     "Select Class": [""],
-  "Science": ["Teacher4", "Teacher5", "Teacher6"],
+  "Biology": ["Teacher4", "Teacher5", "Teacher6"],
   "History": ["Teacher7", "Teacher8", "Teacher9"],
   "Physics": ["Teacher4","Teacher1"]
 };
@@ -535,6 +535,7 @@ function classSelectionChanged() {
     const selectedClass = viewclassDropdown.value();
     viewClassSelect = selectedClass;
     classSelectionMade = true;
+    toggleVariable4()
     calculateAverageClassReviews()
         .then((averageClassReviews) => {
             const selectedClass = viewclassDropdown.value();
@@ -619,8 +620,9 @@ function toggleVariable3() {
     viewreviews = 0;
     reviews = 0;
 }
-function toggleVariable4(){
-    classFavorites.push(viewClassSelect.value());
+function toggleVariable4(selectedClass){
+    classFavorites.push(selectedClass);
+    console.log("Selected classes:", classFavorites);
 }
 
 
