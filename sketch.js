@@ -10,7 +10,7 @@ var fc = 0; // 0 is teacher, 1 is student
 let classDropdown, teacherDropdown;
 let classes = {
     "Select Class": [""],
-  "Biology": ["Teacher4", "Teacher5", "Teacher6"],
+  "Science": ["Teacher4", "Teacher5", "Teacher6"],
   "History": ["Teacher7", "Teacher8", "Teacher9"],
   "Physics": ["Teacher4","Teacher1"]
 };
