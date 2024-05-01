@@ -121,7 +121,7 @@ function setup() {
   classDropdown.style("font-size", "16px");
   classDropdown.style("text-align", "center");
   classDropdown.position(windowWidth / 2 - 100, 110);
-  classDropdown.size(300, 80);
+  classDropdown.size(200, 40);
   for (let cls in classes) {
     classDropdown.option(cls);
   }
