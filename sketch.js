@@ -9,6 +9,8 @@ let firstCharacter = "";
 var fc = 0; // 0 is teacher, 1 is student
 let signedIn = 0; //0 has not tried
 let classDropdown, teacherDropdown;
+let classFavoriteAdd = "";
+let classFaviriteRemove;
 let classes = {
   "Select Class": [""],
   Science: ["Teacher4", "Teacher5", "Teacher6"],
@@ -18,6 +20,7 @@ let classes = {
 var welcomeMSGx = 1070;
 var welcomeMSGy = 15;
 let classFavorites = [];
+let classFavoritesArray = {};
 let reviews = 0; //0 is no review
 let viewreviews = 0; //0 is not viewing reviews
 let viewClassSelect = "";
@@ -38,6 +41,16 @@ var CIBx = 420;
 var CIBy = 512;
 var SCBx = 535;
 var SCBy = 600;
+let FCB0 = "";
+let FCB1 = "";
+let FCB2 = "";
+let FCB3 = "";
+let FCB4 = "";
+let FCB5 = "";
+let FCB6 = "";
+let FCB7 = "";
+let favSelectionMade = false;
+let favSelection = "";
 
 function preload() {
   // Load the font file
@@ -108,7 +121,7 @@ function setup() {
   classDropdown.style("font-size", "16px");
   classDropdown.style("text-align", "center");
   classDropdown.position(windowWidth / 2 - 100, 110);
-  classDropdown.size(200, 40);
+  classDropdown.size(300, 80);
   for (let cls in classes) {
     classDropdown.option(cls);
   }
@@ -172,6 +185,62 @@ function setup() {
   AnonymousCheckBox = createCheckbox("Anonymous", true);
   AnonymousCheckBox.position(windowWidth / 2 - 50, 570);
   AnonymousCheckBox.hide();
+  let joe = 50;
+  favoriteClassButton0 = createButton(FCB0);
+  favoriteClassButton0.style("font-size", "20px");
+  favoriteClassButton0.style("text-align", "center");
+  favoriteClassButton0.size(300, joe);
+  favoriteClassButton0.mousePressed(toggleVariable5);
+  favoriteClassButton0.hide();
+
+  favoriteClassButton1 = createButton(FCB1);
+  favoriteClassButton1.style("font-size", "20px");
+  favoriteClassButton1.style("text-align", "center");
+  favoriteClassButton1.size(300, joe);
+  favoriteClassButton1.mousePressed(toggleVariable5);
+  favoriteClassButton1.hide();
+
+  favoriteClassButton2 = createButton(FCB2);
+  favoriteClassButton2.style("font-size", "20px");
+  favoriteClassButton2.style("text-align", "center");
+  favoriteClassButton2.size(300, joe);
+  favoriteClassButton2.mousePressed(toggleVariable5(2));
+  favoriteClassButton2.hide();
+
+  favoriteClassButton3 = createButton(FCB3);
+  favoriteClassButton3.style("font-size", "20px");
+  favoriteClassButton3.style("text-align", "center");
+  favoriteClassButton3.size(300, joe);
+  favoriteClassButton3.mousePressed(toggleVariable5(3));
+  favoriteClassButton3.hide();
+
+  favoriteClassButton4 = createButton(FCB4);
+  favoriteClassButton4.style("font-size", "20px");
+  favoriteClassButton4.style("text-align", "center");
+  favoriteClassButton4.size(300, joe);
+  favoriteClassButton4.mousePressed(toggleVariable5(4));
+  favoriteClassButton4.hide();
+
+  favoriteClassButton5 = createButton(FCB5);
+  favoriteClassButton5.style("font-size", "20px");
+  favoriteClassButton5.style("text-align", "center");
+  favoriteClassButton5.size(300, joe);
+  favoriteClassButton5.mousePressed(toggleVariable5(5));
+  favoriteClassButton5.hide();
+
+  favoriteClassButton6 = createButton(FCB6);
+  favoriteClassButton6.style("font-size", "20px");
+  favoriteClassButton6.style("text-align", "center");
+  favoriteClassButton6.size(300, joe);
+  favoriteClassButton6.mousePressed(toggleVariable5(6));
+  favoriteClassButton6.hide();
+
+  favoriteClassButton7 = createButton(FCB7);
+  favoriteClassButton7.style("font-size", "20px");
+  favoriteClassButton7.style("text-align", "center");
+  favoriteClassButton7.size(300, joe);
+  favoriteClassButton7.mousePressed(toggleVariable5(7));
+  favoriteClassButton7.hide();
 
   // Adjust UI elements if the window is resized
   windowResized();
@@ -200,6 +269,14 @@ function setup() {
             homepagebutton.show();
             saveFavoriteButton.hide();
             AnonymousCheckBox.show();
+            favoriteClassButton0.hide();
+            favoriteClassButton1.hide();
+            favoriteClassButton2.hide();
+            favoriteClassButton3.hide();
+            favoriteClassButton4.hide();
+            favoriteClassButton5.hide();
+            favoriteClassButton6.hide();
+            favoriteClassButton7.hide();
             userName = user.displayName || "User";
             print("bob");
             lwhs = 1;
@@ -221,6 +298,14 @@ function setup() {
             viewclassDropdown.show();
             saveFavoriteButton.show();
             AnonymousCheckBox.hide();
+            favoriteClassButton0.show();
+            favoriteClassButton1.show();
+            favoriteClassButton2.show();
+            favoriteClassButton3.show();
+            favoriteClassButton4.show();
+            favoriteClassButton5.show();
+            favoriteClassButton6.show();
+            favoriteClassButton7.show();
             userName = user.displayName || "User";
             print("omar");
             lwhs = 1;
@@ -242,6 +327,14 @@ function setup() {
             viewclassDropdown.hide();
             saveFavoriteButton.hide();
             AnonymousCheckBox.hide();
+            favoriteClassButton0.hide();
+            favoriteClassButton1.hide();
+            favoriteClassButton2.hide();
+            favoriteClassButton3.hide();
+            favoriteClassButton4.hide();
+            favoriteClassButton5.hide();
+            favoriteClassButton6.hide();
+            favoriteClassButton7.hide();
             userName = user.displayName || "User";
             lwhs = 1;
             fc = 1;
@@ -260,6 +353,14 @@ function setup() {
           classDropdown.hide();
           saveFavoriteButton.hide();
           AnonymousCheckBox.hide();
+          favoriteClassButton0.hide();
+          favoriteClassButton1.hide();
+          favoriteClassButton2.hide();
+          favoriteClassButton3.hide();
+          favoriteClassButton4.hide();
+          favoriteClassButton5.hide();
+          favoriteClassButton6.hide();
+          favoriteClassButton7.hide();
           userName = user.displayName || "User";
           lwhs = 1;
           fc = 0;
@@ -292,6 +393,14 @@ function setup() {
       viewclassDropdown.hide();
       saveFavoriteButton.hide();
       AnonymousCheckBox.hide();
+      favoriteClassButton0.hide();
+      favoriteClassButton1.hide();
+      favoriteClassButton2.hide();
+      favoriteClassButton3.hide();
+      favoriteClassButton4.hide();
+      favoriteClassButton5.hide();
+      favoriteClassButton6.hide();
+      favoriteClassButton7.hide();
       userName = "";
       print("joe");
     }
@@ -322,6 +431,14 @@ function draw() {
         homepagebutton.show();
         saveFavoriteButton.hide();
         AnonymousCheckBox.show();
+        favoriteClassButton0.hide();
+        favoriteClassButton1.hide();
+        favoriteClassButton2.hide();
+        favoriteClassButton3.hide();
+        favoriteClassButton4.hide();
+        favoriteClassButton5.hide();
+        favoriteClassButton6.hide();
+        favoriteClassButton7.hide();
         fill(0);
         textSize(15);
         textFont(customFont);
@@ -410,8 +527,78 @@ function draw() {
         viewclassDropdown.show();
         saveFavoriteButton.show();
         AnonymousCheckBox.hide();
-        selectedClass = viewclassDropdown.value();
         viewclassDropdown.changed(classSelectionChanged);
+        ClassFavList()
+          .then((classFav) => {
+            classFavorites = classFav;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        let bobob = classFavorites.length;
+        let bobobob = 50;
+        console.log(classFavorites);
+        //bobob = classFavorites.length;
+        yPos = 180;
+        if (bobob >= 1) {
+          favoriteClassButton0.html(classFavorites[0]);
+          favoriteClassButton0.position(8, yPos);
+          favoriteClassButton0.show();
+          yPos += bobobob;
+        }
+        if (bobob >= 2) {
+          favoriteClassButton1.html(classFavorites[1]);
+          favoriteClassButton1.position(8, yPos);
+          favoriteClassButton1.show();
+          yPos += bobobob;
+        }
+        if (bobob >= 3) {
+          favoriteClassButton2.html(classFavorites[2]);
+          favoriteClassButton2.position(8, yPos);
+          favoriteClassButton2.show();
+          yPos += bobobob;
+        }
+        if (bobob >= 4) {
+          favoriteClassButton3.html(classFavorites[3]);
+          favoriteClassButton3.position(8, yPos);
+          favoriteClassButton3.show();
+          yPos += bobobob;
+        }
+        if (bobob >= 5) {
+          favoriteClassButton4.html(classFavorites[4]);
+          favoriteClassButton4.position(8, yPos);
+          favoriteClassButton4.show();
+          yPos += bobobob;
+        }
+        if (bobob >= 6) {
+          favoriteClassButton5.html(classFavorites[5]);
+          favoriteClassButton5.position(8, yPos);
+          favoriteClassButton5.show();
+          yPos += bobobob;
+        }
+        if (bobob >= 7) {
+          favoriteClassButton6.html(classFavorites[6]);
+          favoriteClassButton6.position(8, yPos);
+          favoriteClassButton6.show();
+          yPos += bobobob;
+        }
+        if (bobob >= 8) {
+          favoriteClassButton7.html(classFavorites[7]);
+          favoriteClassButton7.position(8, yPos);
+          favoriteClassButton7.show();
+          yPos += bobobob;
+        }
+        if (favSelectionMade == true) {
+          if (viewclassDropdown.value() == "Select Class") {
+            selectedClass = classFavorites[favSelection];
+            classSelectionMade = true;
+          } else {
+            selectedClass = viewclassDropdown.value();
+          }
+        } else {
+          selectedClass = viewclassDropdown.value();
+        }
+        console.log(selectedClass);
         if (classSelectionMade == true) {
           // Display the text
           if (viewClassSelect == "Select Class") {
@@ -432,7 +619,7 @@ function draw() {
               let yourName = "";
               if (review.name == userName) {
                 yourName = " (you)";
-                console.log(yourName);
+                //console.log(yourName);
               }
               let plural = "";
               let timeType = "";
@@ -522,6 +709,7 @@ function draw() {
           textAlign(CENTER, CENTER);
           text("Please make a class selection", windowWidth / 2, 300);
         }
+
         fill(0);
         textFont(customFont);
         textSize(20); // Smaller text size
@@ -531,6 +719,7 @@ function draw() {
         line(windowWidth - 350, 100, windowWidth - 350, 10000);
         line(300, 100, 300, 10000);
         text("Reviews", windowWidth - 135, 120);
+        text("Your Favorites (Under Construction)", 220, 120);
       } else {
         //menu
         reviewbutton.show();
@@ -548,6 +737,14 @@ function draw() {
         viewclassDropdown.hide();
         saveFavoriteButton.hide();
         AnonymousCheckBox.hide();
+        favoriteClassButton0.hide();
+        favoriteClassButton1.hide();
+        favoriteClassButton2.hide();
+        favoriteClassButton3.hide();
+        favoriteClassButton4.hide();
+        favoriteClassButton5.hide();
+        favoriteClassButton6.hide();
+        favoriteClassButton7.hide();
         classSelectionChanged();
         textSize(25);
         textAlign(CENTER, CENTER);
@@ -623,6 +820,7 @@ function classSelectionChanged() {
   const selectedClass = viewclassDropdown.value();
   viewClassSelect = selectedClass;
   classSelectionMade = true;
+  favSelectionMade = false;
   toggleVariable4();
   calculateAverageClassReviews()
     .then((averageClassReviews) => {
@@ -665,6 +863,7 @@ function saveComment() {
   const classm = classDropdown.value();
   const teacherm = teacherDropdown.value();
   const shownUserName = shownName;
+  const AddToFavorites = classFavoriteAdd;
   const userId = firebase.auth().currentUser.uid;
   // Save the comment to Firebase; adjust the path as necessary for your data structure
   firebase
@@ -680,6 +879,7 @@ function saveComment() {
       classm: classm,
       teacherm: teacherm,
       timestamp: firebase.database.ServerValue.TIMESTAMP,
+      AddToFav: AddToFavorites,
     })
     .then(() => {
       console.log("Comment saved successfully.");
@@ -692,6 +892,26 @@ function saveComment() {
       console.error("Error saving comment:", error.message);
     });
   console.log(comments);
+}
+function saveFavorites() {
+  const AddToFavorites = classFavoriteAdd;
+  const userId = firebase.auth().currentUser.uid;
+  // Save the comment to Firebase; adjust the path as necessary for your data structure
+  firebase
+    .database()
+    .ref("comments/" + userId)
+    .push({
+      username: userName,
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      AddToFav: AddToFavorites,
+    })
+    .then(() => {
+      console.log("Comment saved successfully.");
+      commentInput.value(""); // Clear the input after saving
+    })
+    .catch((error) => {
+      console.error("Error saving comment:", error.message);
+    });
 }
 
 function windowResized() {
@@ -710,9 +930,24 @@ function toggleVariable3() {
   viewreviews = 0;
   reviews = 0;
 }
-function toggleVariable4(selectedClass) {
-  classFavorites.push(selectedClass);
-  console.log("Selected classes:", classFavorites);
+function toggleVariable4() {
+  const classSelected = viewclassDropdown.value();
+  console.log(classSelected);
+  if (classSelected) {
+    if (classSelected == "Select Class") {
+    } else {
+      if (!classFavoriteAdd.includes(classSelected)) {
+        classFavoriteAdd = classSelected;
+        saveFavorites();
+        console.log("Selected classes:", classFavoriteAdd);
+      }
+    }
+  }
+}
+function toggleVariable5() {
+  favSelectionMade = true;
+  favSelection = 0;
+  viewclassDropdown.value("Select Class");
 }
 
 function calculateAverageClassReviews() {
@@ -834,6 +1069,78 @@ function textReviews(selectedClass) {
         console.error("Error finding reviews:", error);
         reject(error);
       });
+  });
+}
+// function favTextReviews() {
+//   return new Promise((resolve, reject) => {
+//     const favTextReviews = [];
+//     const favTextReviewsRef = firebase.database().ref("comments");
+
+//     favTextReviewsRef
+//       .once("value", (snapshot) => {
+//         snapshot.forEach((userSnapshot) => {
+//           userSnapshot.forEach((commentSnapshot) => {
+//             const reviewUserName = commentSnapshot.child("name").val();
+//             const textReview = commentSnapshot.child("comment").val();
+//             const teacherName = commentSnapshot.child("teacherm").val();
+//             const classReview = commentSnapshot.child("classr").val();
+//             const className = commentSnapshot.child("classm").val();
+//             const timestamp = commentSnapshot.child("timestamp").val();
+
+//             // Check if the comment belongs to the selected class
+//             if (ClassFav.includes(classFavorites)) {
+//               if (textReview == "") {
+//               } else {
+//                 favTextReviews.push({
+//                   class: className,
+//                   teacher: teacherName,
+//                   review: textReview,
+//                   time: timestamp,
+//                   name: reviewUserName,
+//                   classrev: classReview,
+//                 });
+//               }
+//             }
+//           });
+//         });
+//         // Resolve the promise with the list of teacher reviews
+//         resolve(favTextReviews);
+//       })
+//       .catch((error) => {
+//         console.error("Error finding reviews:", error);
+//         reject(error);
+//       });
+//   });
+// }
+function ClassFavList() {
+  return new Promise((resolve, reject) => {
+    const classFav = [];
+    const ClassFavRef = firebase.database().ref("comments");
+
+    ClassFavRef.once("value", (snapshot) => {
+      snapshot.forEach((userSnapshot) => {
+        userSnapshot.forEach((commentSnapshot) => {
+          const UserName = commentSnapshot.child("username").val();
+          const FavList = commentSnapshot.child("AddToFav").val();
+          // Check if the comment belongs to the selected class
+          if (userName == UserName) {
+            if (FavList) {
+              if (FavList == "") {
+              } else {
+                if (!classFav.includes(FavList)) {
+                  classFav.push(FavList);
+                }
+              }
+            }
+          }
+        });
+      });
+      // Resolve the promise
+      resolve(classFav);
+    }).catch((error) => {
+      console.error("Error finding reviews:", error);
+      reject(error);
+    });
   });
 }
 function splitTextIntoLines(text) {
