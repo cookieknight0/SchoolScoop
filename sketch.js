@@ -13,9 +13,24 @@ let classFavoriteAdd = "";
 let classFaviriteRemove;
 let classes = {
   "Select Class": [""],
-  Science: ["Teacher4", "Teacher5", "Teacher6"],
-  History: ["Teacher7", "Teacher8", "Teacher9"],
-  Physics: ["Teacher4", "Teacher1"],
+  "3D-Printing and Parametric Design": ["Samu"],
+  "Analog and Digital": ["Mr.Kleindolph", "Mx.Chang"],
+  "Device Invention": ["Mr.Kleindolph"],
+  "Community Computing PPP": ["Ms.Brooks"],
+  "Design and Technology": [
+    "Mr.Kleindolph",
+    "Mr.Kaplan",
+    "Samu",
+    "Mr.Fall",
+    "Mx.Chang",
+    "Ms.Brooks",
+  ],
+  "Graphics and Game Design": ["Ms.Brooks", "Mx.Chang"],
+  "Jewlery 1 & 2": ["Ms.Nathanson"],
+  PSPP: ["Mr.Fall"],
+  "Rethinking Furniture": ["Mr.Kaplan"],
+  "Sewing and Textile 1 & 2": ["Ms.Nathanson"],
+  "Wood: Joinery & Turning": ["Mr.Fall"],
 };
 var welcomeMSGx = 1070;
 var welcomeMSGy = 15;
