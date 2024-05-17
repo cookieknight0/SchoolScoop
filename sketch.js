@@ -454,6 +454,17 @@ function draw() {
         favoriteClassButton5.hide();
         favoriteClassButton6.hide();
         favoriteClassButton7.hide();
+        if (classDropdown.value().length >= 15) {
+          classDropdown.size(200 + (classDropdown.value().length - 14) * 5, 40);
+          classDropdown.position(
+            windowWidth / 2 -
+              (200 + (classDropdown.value().length - 14) * 5) / 2,
+            110
+          );
+        } else {
+          classDropdown.position(windowWidth / 2 - 100, 110);
+          classDropdown.size(200, 40);
+        }
         fill(0);
         textSize(15);
         textFont(customFont);
@@ -543,6 +554,20 @@ function draw() {
         saveFavoriteButton.show();
         AnonymousCheckBox.hide();
         viewclassDropdown.changed(classSelectionChanged);
+        if (viewclassDropdown.value().length >= 15) {
+          viewclassDropdown.size(
+            200 + (viewclassDropdown.value().length - 14) * 5,
+            40
+          );
+          viewclassDropdown.position(
+            windowWidth / 2 -
+              (200 + (viewclassDropdown.value().length - 14) * 5) / 2,
+            110
+          );
+        } else {
+          viewclassDropdown.position(windowWidth / 2 - 100, 110);
+          viewclassDropdown.size(200, 40);
+        }
         ClassFavList()
           .then((classFav) => {
             classFavorites = classFav;
@@ -618,12 +643,12 @@ function draw() {
           // Display the text
           if (viewClassSelect == "Select Class") {
           } else {
-            textSize(20);
+            textSize(18);
             textAlign(CENTER, CENTER);
             const rating = Number(viewAVGClass).toFixed(2);
             text(
               viewClassSelect + "'s Average Review: " + rating + "/10",
-              windowWidth / 2,
+              windowWidth / 2 - 25,
               230
             );
             const textCommentsRef = textComments;
@@ -660,6 +685,7 @@ function draw() {
                   }
                 }
               } else {
+                convertedTime = Math.floor(difference_seconds);
                 timeType = "second";
               }
               if (convertedTime >= 2) {
@@ -669,11 +695,9 @@ function draw() {
               // Split the text into lines with 30 characters each
               const lines = splitTextIntoLines(textToShow);
               textSize(18);
-              text(
-                review.class + " (" + review.teacher + "):",
-                windowWidth - 175,
-                yPos
-              );
+              text(review.class, windowWidth - 175, yPos);
+              yPos += 25;
+              text(" (" + review.teacher + "):", windowWidth - 175, yPos);
               yPos += 25;
               // Display each line of text
               for (let j = 0; j < lines.length; j++) {
@@ -836,7 +860,6 @@ function classSelectionChanged() {
   viewClassSelect = selectedClass;
   classSelectionMade = true;
   favSelectionMade = false;
-  toggleVariable4();
   calculateAverageClassReviews()
     .then((averageClassReviews) => {
       const selectedClass = viewclassDropdown.value();
